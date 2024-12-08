@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earthquake Risk Assessment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 10px; /* Reducir margen */
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.4; /* Reducir el espacio entre líneas */
+        }
+
+        button {
+            margin: 8px 0;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        h1, h2 {
+            color: #444;
+            font-size: 18px; /* Reducir tamaño de fuente */
+        }
+
+        /* Estilo para el contenedor de las secciones */
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Ajustar ancho de las columnas */
+            gap: 15px;
+            margin-top: 15px; /* Reducir margen superior */
+        }
+
+        /* Estilo para las listas */
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            margin: 8px 0;
+            padding: 8px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 14px; /* Reducir tamaño de fuente de los elementos */
+        }
+
+        /* Colores según el riesgo */
+        .high {
+            color: red;
+        }
+
+        .moderate {
+            color: orange;
+        }
+
+        .low {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Earthquake Risk Assessment</h1>
+    <button onclick="generateData()">Generate Data</button>
+
+    <div class="container">
+        <div>
+            <h2>Historical Earthquakes Above 5° (Previous 5 Days & Next 5 Days)</h2>
+            <ul id="historical-earthquakes"></ul>
+        </div>
+
+        <div>
+            <h2>Radon Gas Levels</h2>
+            <ul id="radon-levels"></ul>
+        </div>
+
+        <div>
+            <h2>Geomagnetic Storms</h2>
+            <ul id="geomagnetic-storms"></ul>
+        </div>
+
+        <div>
+            <h2>Earthquake Risk</h2>
+            <ul id="earthquake-risk"></ul>
+        </div>
+    </div>
+
+    <script>
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function getRandomYear() {
+            const currentYear = new Date().getFullYear();
+            return getRandomInt(currentYear - 50, currentYear - 1); // Año aleatorio entre el año pasado y hace 50 años
+        }
+
+        function getSolarCyclePhase() {
+            const cycleYear = getRandomInt(1, 11); // Simula el ciclo solar de 11 años
+            return cycleYear;
+        }
+
+        function generateData() {
+            const historicalEarthquakes = [];
+            const radonLevels = [];
+            const geomagneticStorms = [];
+
+            // Generate historical earthquakes for the previous 5 days and the next 5 days
+            const startDate = new Date();
+            for (let i = -5; i <= 5; i++) {
+                const date = new Date(startDate);
+                date.setDate(startDate.getDate() + i);
+
+                // Determine the number of earthquakes within these 10 days (average 10 to 20 per year)
+                if (Math.random() < (15 / 365)) { // 10 to 20 sismos al año, aproximadamente 15 de 365 días
+                    const magnitude = getRandomInt(5, 8); // Magnitud entre 5 y 8, 5 es más común
+
+                    // Set a random year between last year and 50 years ago
+                    const year = getRandomYear();
+                    date.setFullYear(year);
+
+                    historicalEarthquakes.push({
+                        date: date,
+                        magnitude: magnitude
+                    });
+                }
+            }
+
+            // Generate radon levels (last 3 days)
+            for (let i = 0; i < 3; i++) {
+                radonLevels.push(getRandomInt(0, 1) === 0 ? 'Normal' : 'High');
+            }
+
+            // Generate geomagnetic storm data (last 10 days)
+            const solarCycle = getSolarCyclePhase();
+            let solarStormFrequency = [];
+            for (let i = 0; i < 10; i++) {
+                let stormOccurrence = 'No';
+
+                // Solar storm frequency based on the solar cycle
+                if (solarCycle >= 5 && solarCycle <= 7) { // Maximum solar activity
+                    if (Math.random() < 0.2) { // Up to 1 storm a day in max activity
+                        stormOccurrence = 'Yes';
+                    }
+                } else if (solarCycle >= 1 && solarCycle <= 3) { // Minimum solar activity
+                    if (Math.random() < 0.1) { // 1 storm every 7-10 days
+                        stormOccurrence = 'Yes';
+                    }
+                }
+
+                solarStormFrequency.push(stormOccurrence);
+            }
+
+            // Display historical earthquakes
+            const historicalList = document.getElementById('historical-earthquakes');
+            historicalList.innerHTML = '';
+            historicalEarthquakes.forEach(eq => {
+                const li = document.createElement('li');
+                li.textContent = `${eq.date.toDateString()} - Magnitude: ${eq.magnitude}`;
+                historicalList.appendChild(li);
+            });
+
+            // Display radon levels
+            const radonList = document.getElementById('radon-levels');
+            radonList.innerHTML = '';
+            radonLevels.forEach((level, index) => {
+                const li = document.createElement('li');
+                li.textContent = `Day ${index + 1}: ${level}`;
+                radonList.appendChild(li);
+            });
+
+            // Display geomagnetic storms
+            const geomagneticList = document.getElementById('geomagnetic-storms');
+            geomagneticList.innerHTML = '';
+            solarStormFrequency.forEach((storm, index) => {
+                const li = document.createElement('li');
+                li.textContent = `Day ${index + 1}: ${storm}`;
+                geomagneticList.appendChild(li);
+            });
+
+            // Calculate earthquake risk
+            const riskList = document.getElementById('earthquake-risk');
+            riskList.innerHTML = '';
+            const risks = calculateRisks(historicalEarthquakes, radonLevels, solarStormFrequency);
+            risks.forEach((risk, index) => {
+                const li = document.createElement('li');
+                li.textContent = `${['Today', 'Tomorrow', 'Day After Tomorrow'][index]}: ${risk}% Risk`;
+                li.className = risk > 70 ? 'high' : risk > 40 ? 'moderate' : 'low';
+                riskList.appendChild(li);
+            });
+        }
+
+        function calculateRisks(historicalEarthquakes, radonLevels, geomagneticStorms) {
+            const baseRisk = 10;
+            const risks = [];
+
+            for (let i = 0; i < 3; i++) {
+                let risk = baseRisk;
+
+                // Factor in historical earthquakes
+                historicalEarthquakes.forEach(eq => {
+                    risk += eq.magnitude * 5; // Increase risk by magnitude factor
+                });
+
+                // Factor in radon levels
+                if (radonLevels[i] === 'High') {
+                    risk += 20;
+                }
+
+                // Factor in geomagnetic storms
+                if (geomagneticStorms.slice(0, 3).includes('Yes')) {
+                    risk += 10;
+                }
+
+                // Cap risk at 100%
+                risk = Math.min(risk, 100);
+
+                // Ensure variability
+                if (risk > 90 && Math.random() > 0.5) {
+                    risk -= getRandomInt(5, 15);
+                }
+
+                risks.push(risk);
+            }
+
+            return risks;
+        }
+
+        // Initial data generation
+        generateData();
+    </script>
+</body>
+</html>
